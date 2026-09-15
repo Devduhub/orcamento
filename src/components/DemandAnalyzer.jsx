@@ -5,7 +5,7 @@ import { PRESET_PACKAGES, DEFAULT_AI_MODELS } from '../data/defaultPresets';
 export function DemandAnalyzer({ onApplyPlan, clientInfo }) {
   const [isOpen, setIsOpen] = useState(true);
   const [demandText, setDemandText] = useState(
-    "Cliente da área de Varejo de Roupas e Vestuário quer um agente de IA no WhatsApp para atendimento aos clientes, triagem de pedidos, sugestão de produtos com catálogo, agendamento e integração com CRM. Estimativa de 4.000 a 5.000 conversas/mês."
+    "Cliente da área de Varejo / Serviços quer um agente de IA no WhatsApp para atendimento inicial, triagem, agendamento e integração com CRM. Estimativa de 2.000 conversas/mês."
   );
   const [analyzedResult, setAnalyzedResult] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -13,8 +13,8 @@ export function DemandAnalyzer({ onApplyPlan, clientInfo }) {
   // Quick Preset Sample Requests
   const sampleDemands = [
     {
-      label: "👔 Robson Moreira (Varejo / Revenda Completo)",
-      text: "ORÇAMENTO - ESTRUTURA COMPLETA DE ATENDIMENTO E QUALIFICAÇÃO - ROBSON MOREIRA. Atendimento no WhatsApp para Compras e Varejo Roupas e Vestuário, combinando chatbot (primeiro contato, mensagem boas vindas, grupo VIP, 1º áudio gravado e nome) + IA de Qualificação (🛍️ Revenda vs 👕 Uso pessoal, experiência no ramo) + Cadastro (CEP, produto, tamanhos) + Orçamento + Envio de Mídias + CRM BotConversa (9 etapas) + Etiqueta LEAD QUENTE + Google Sheets + 3 Follow-ups (2h, 2d, 1w) + Horário Comercial + 10 Modelos Meta Cloud API."
+      label: "👔 Estrutura Completa de Atendimento",
+      text: "Atendimento no WhatsApp para negócio local combinando chatbot (primeiro contato, boas vindas) + IA de Qualificação (Triagem de necessidades) + Coleta de Dados (CEP, preferência) + CRM Kanban (Etiqueta LEAD QUENTE) + 3 Follow-ups (2h, 2d, 1w) + Horário Comercial."
     },
     {
       label: "🛍️ Varejo / Roupas (Média Volumetria)",
@@ -25,12 +25,12 @@ export function DemandAnalyzer({ onApplyPlan, clientInfo }) {
       text: "Necessito de 1 Agente de IA para responder dúvidas frequentes (FAQ), agendar consultas e triar pacientes via WhatsApp. Volume baixo a médio, cerca de 1.500 conversas/mês."
     },
     {
-      label: "🚀 Escala Multi-Agente + Quiz (Alta Volumetria)",
-      text: "Preciso de uma estrutura completa com 4 Agentes de IA especialistas (Vendas, Qualificação, Quiz de Estilo e Suporte), Banco de Dados Vetorial, Dashboard de Métricas e 10.000 conversas/mês."
+      label: "🚀 Escala Multi-Agente (Alta Volumetria)",
+      text: "Preciso de uma estrutura completa com 4 Agentes de IA especialistas, Banco de Dados Vetorial, Dashboard de Métricas e 10.000 conversas/mês."
     },
     {
-      label: "🤝 Modelo Parceria / Revenue Share (Matriz Partner)",
-      text: "Queremos parceria com a UX4YOU sem mensalidade fixa alta. Setup comercial inicial + 10% de participação em revenue share sobre todas as vendas realizadas pela automação no WhatsApp."
+      label: "🤝 Modelo Parceria (Matriz Partner)",
+      text: "Queremos parceria de implantação de IA sem mensalidade fixa de suporte. Setup inicial de implantação + 10% de participação em vendas sobre negócios fechados pela ferramenta no WhatsApp."
     }
   ];
 
@@ -39,22 +39,32 @@ export function DemandAnalyzer({ onApplyPlan, clientInfo }) {
     setIsAnalyzing(true);
     setTimeout(() => {
       const lower = demandText.toLowerCase();
-      const isRobsonProposal = lower.includes("robson") || (lower.includes("botconversa") && lower.includes("sheets"));
-      const isPartner = lower.includes("parceria") || lower.includes("revenue") || lower.includes("10%") || lower.includes("sem mensalidade") || lower.includes("comissão");
-      const isMultiAgentHighScale = lower.includes("4 agente") || lower.includes("multi-agente") || lower.includes("10.000") || lower.includes("10k") || lower.includes("quiz") || lower.includes("site");
-      const isMediumScale = lower.includes("2 agente") || lower.includes("dashboard") || lower.includes("5.000") || lower.includes("5k") || lower.includes("catalogo") || lower.includes("varejo");
-      const isHourly = lower.includes("avulso") || lower.includes("apenas suporte") || lower.includes("ajustes pontuais");
+
+      // ⚠️ O Matriz Partner NUNCA é recomendado automaticamente.
+      // É escolhido manualmente pelo consultor quando aplicável.
+      
+      // Complexidade alta: múltiplos agentes, grande volume, dashboards
+      const isMultiAgentHighScale = lower.includes("escala") || lower.includes("10.000") || lower.includes("10k") || lower.includes("multi-agente") || lower.includes("4 agente");
+      
+      // Complexidade média: CRM, dashboard, catálogo, integração de dados
+      const isMediumScale = lower.includes("crm") || lower.includes("dashboard") || lower.includes("catálogo") || lower.includes("5.000") || lower.includes("banco de dados") || lower.includes("integração");
+      
+      // Setup completo com fluxos avançados
+      const isComplexSetup = lower.includes("completa") || lower.includes("kanban") || lower.includes("planilha") || lower.includes("follow-up") || lower.includes("funil");
+      
+      // Banco de horas / suporte avulso
+      const isHourly = lower.includes("avulso") || lower.includes("ajuste") || lower.includes("manutenção") || (lower.includes("horas") && !lower.includes("atendimento"));
 
       let recommendedPreset;
       let modelId = "gpt-4o-mini";
-      let estimatedConversations = 4000;
+      let estimatedConversations = 2000;
       let msgsPerConv = 8;
       let reasoning = [];
       let longTermStrategy = "";
       let customServices = null;
 
-      // Extract conversation numbers if explicitly present
-      const convMatch = lower.match(/(\d+[\.\,]?\d*)\s*(conversas|atendimentos|leads|mensagens)/);
+      // Extrair volume de conversas mencionado no texto
+      const convMatch = lower.match(/(\d+[\.,]?\d*)\s*(conversas|atendimentos|leads|mensagens)/);
       if (convMatch) {
         const numStr = convMatch[1].replace(".", "").replace(",", "");
         const parsedNum = parseInt(numStr, 10);
@@ -63,70 +73,41 @@ export function DemandAnalyzer({ onApplyPlan, clientInfo }) {
         }
       }
 
-      if (isRobsonProposal) {
-        recommendedPreset = PRESET_PACKAGES.find(p => p.id === "matriz-digital-2");
-        modelId = "gpt-4o-mini";
-        estimatedConversations = 4500;
-        reasoning = [
-          "Arquitetura Híbrida (Chatbot Estático + IA de Qualificação): economiza tokens no 1º contato (áudio + grupo VIP) e aciona a IA na qualificação de perfil.",
-          "Segmentação Inteligente (🛍️ Revenda vs 👕 Uso Pessoal): fluxo exclusivo com verificação de experiência no ramo para revendedores.",
-          "CRM Kanban BotConversa (9 Etapas) + Google Sheets automático para histórico e etiqueta 'LEAD QUENTE'.",
-          "Régua de Recuperação com 3 Follow-ups automáticos (2h, 2 dias, 1 semana) e verificação de Horário de Atendimento Humano."
-        ];
-        longTermStrategy = "Estrutura completa e de altíssima conversão para Varejo & Vestuário. Ao filtrar leads de uso pessoal vs revenda no primeiro nível, sua equipe recebe apenas oportunidades pré-qualificadas com CEP, produtos e quantidades desejadas, otimizando o tempo de vendas.";
-        customServices = [
-          { id: "serv-1", title: "1. Chatbot Inicial & Rastreio de Origem (Meta API)", description: "Identificação automática da origem (TikTok, YouTube, Instagram), mensagem de boas-vindas, envio de link VIP, Instagram e 1º áudio gravado com solicitação do nome do cliente.", price: 1200, qty: 1, type: "setup" },
-          { id: "serv-2", title: "2. Agente de IA de Qualificação (Revenda vs Uso Pessoal)", description: "Treinamento da IA para triagem de perfil (experiência no ramo para revendedores), tabela de preços das peças e cadastro comercial completo (CEP, endereço, produtos, tamanhos e quantidade).", price: 1500, qty: 1, type: "setup" },
-          { id: "serv-3", title: "3. Integração CRM BotConversa & Google Sheets", description: "Configuração do Funil Kanban (9 etapas), etiquetagem automatizada de 'LEAD QUENTE', alerta imediato ao atendente, verificação de horário comercial e catálogo de mídias (vídeos/fotos/áudios).", price: 1200, qty: 1, type: "setup" },
-          { id: "serv-4", title: "4. Régua de 3 Follow-ups Automáticos & 10 Modelos Meta", description: "Sequência de recuperação aos 2h, 2 dias e 1 semana com menu interativo + criação e homologação oficial de 10 templates de mensagem na Meta Cloud API.", price: 900, qty: 1, type: "setup" }
-        ];
-      } else if (isPartner) {
-        recommendedPreset = PRESET_PACKAGES.find(p => p.id === "matriz-partner");
-        reasoning = [
-          "Modelo focado em crescimento mútuo e alinhamento de incentivos.",
-          "Setup inicial (R$ 3.000 ~ 7.000) para implantar a estrutura comercial completa.",
-          "Participação recorrente de 10% sobre as vendas geradas pela operação de IA.",
-          "Sem mensalidade fixa de suporte, reduzindo a barreira de entrada para o cliente."
-        ];
-        longTermStrategy = "Ideal para empresas com alto potencial de conversão de vendas, onde o modelo de 10% de participação gera rentabilidade escalável a longo prazo sem barreira de fidelidade contratual.";
-      } else if (isMultiAgentHighScale || estimatedConversations >= 8000) {
-        recommendedPreset = PRESET_PACKAGES.find(p => p.id === "matriz-digital-3");
-        modelId = "gpt-4o-mini";
-        reasoning = [
-          "Operação de alta complexidade com necessidade de até 4 Agentes de IA especialistas.",
-          "Inclusão de Quiz/Site Inteligente para altíssima conversão de leads.",
-          "Servidor Cloud de Alta Performance e Cluster de Banco de Dados Vetorial dedicados.",
-          "10 horas de suporte mensal para acompanhamento contínuo e evolução dos fluxos."
-        ];
-        longTermStrategy = "Garante estabilidade e baixa latência para altos volumes (10.000+ conversas/mês). A estrutura com 4 agentes isola responsabilidades (vendas, suporte, recomendação) evitando alucinações da IA.";
-      } else if (isMediumScale || estimatedConversations >= 3000) {
+      if (isMultiAgentHighScale || estimatedConversations >= 8000) {
         recommendedPreset = PRESET_PACKAGES.find(p => p.id === "matriz-digital-2");
         modelId = "gpt-4o-mini";
         reasoning = [
-          "Necessidade de 2 Agentes de IA (ex: Atendimento Inicial + Qualificação/Vendas).",
-          "Plataforma Leona com Dashboard de Indicadores em Tempo Real.",
-          "Banco de dados de vetores para busca inteligente em catálogo de produtos ou base de conhecimento.",
-          "6 horas de suporte mensal da UX4YOU inclusas para manutenção e ajustes."
+          "Volume e complexidade elevados: múltiplos fluxos e agentes de IA especializados.",
+          "Base de dados vetorial para busca em catálogo ou conhecimento extenso.",
+          "Dashboard de indicadores para acompanhar a operação em tempo real."
         ];
-        longTermStrategy = "Excelente custo-benefício para empresas em consolidação digital. Permite escala de atendimento mantendo controle total sobre relatórios e métricas no Dashboard.";
+        longTermStrategy = "Estrutura robusta que suporta alto volume sem degradação da qualidade das respostas. Escalável conforme o crescimento do cliente.";
+      } else if (isMediumScale || isComplexSetup || estimatedConversations >= 3000) {
+        recommendedPreset = PRESET_PACKAGES.find(p => p.id === "matriz-digital-2");
+        modelId = "gpt-4o-mini";
+        reasoning = [
+          "Demanda por integração de dados, CRM ou fluxos de qualificação mais elaborados.",
+          "Agente de IA treinado com base de conhecimento específica do negócio.",
+          "Suporte ativo para calibragem e evolução contínua dos fluxos."
+        ];
+        longTermStrategy = "Excelente custo-benefício para operações em consolidação. O Dashboard permite visibilidade total sobre o desempenho do atendimento automatizado.";
       } else if (isHourly) {
         recommendedPreset = PRESET_PACKAGES.find(p => p.id === "pacote-horas-avulso");
         reasoning = [
-          "Demanda focada em manutenção, melhorias pontuais ou banco de horas avulso.",
-          "Sem custos de mensalidade de suporte recorrente obrigatórios."
+          "Demanda de ajustes pontuais ou melhorias em operação já existente.",
+          "Sem mensalidade fixa: paga apenas pelo que usar."
         ];
-        longTermStrategy = "Indicado para clientes que já possuem infraestrutura própria e necessitam apenas de horas especialistas de desenvolvimento da UX4YOU.";
+        longTermStrategy = "Indicado para clientes que já possuem infraestrutura e precisam de horas especializadas da UX4YOU para evoluir.";
       } else {
-        // Default to Matriz Digital 1
+        // Padrão: Pacote Inicial
         recommendedPreset = PRESET_PACKAGES.find(p => p.id === "matriz-digital-1");
         modelId = "gpt-4o-mini";
         reasoning = [
-          "1 Agente de IA especialista focado em triagem, FAQ e direcionamento comercial.",
-          "Automação Leona e integração com WhatsApp Cloud API.",
-          "3 horas de suporte mensal para acompanhamento e otimização.",
-          "Entregável em até 15 dias úteis com rápida validação no mercado."
+          "1 Agente de IA para triagem, FAQ e direcionamento comercial no WhatsApp.",
+          "Integração com WhatsApp Cloud API Oficial (Meta).",
+          "Entregável em até 15 dias úteis com operação funcional."
         ];
-        longTermStrategy = "Ideal para validar a operação de automação com baixo investimento inicial. Permite upgrade simples para o Matriz Digital 2 ou 3 conforme o volume de leads aumentar.";
+        longTermStrategy = "Ideal para validar a automação com investimento inicial controlado. Upgrade simples para o Pacote Avançado conforme o volume de atendimento crescer.";
       }
 
       // Calculate Estimated Monthly Token Cost (USD -> BRL)
@@ -154,12 +135,10 @@ export function DemandAnalyzer({ onApplyPlan, clientInfo }) {
       const isPartnerModel = recommendedPreset.isPartnerModel || false;
 
       // Project Title Suggestion
-      let suggestedProjectTitle = "Gestão de Automação + Inteligência de Operação";
-      if (isRobsonProposal) suggestedProjectTitle = "Estrutura Completa de Atendimento no WhatsApp: Chatbot + IA de Qualificação + CRM + Google Sheets";
-      else if (isPartnerModel) suggestedProjectTitle = "Parceria Comercial & Automação de Operação de IA";
-      else if (isMultiAgentHighScale) suggestedProjectTitle = "Arquitetura Multi-Agente de IA + Site/Quiz Inteligente";
-      else if (isMediumScale) suggestedProjectTitle = "Sistema de Agentes de IA no WhatsApp + Dashboard de Gestão";
-      else suggestedProjectTitle = "Agente de IA no WhatsApp para Atendimento & Triagem";
+      let suggestedProjectTitle = "Agente de IA no WhatsApp para Atendimento e Triagem";
+      if (isMultiAgentHighScale) suggestedProjectTitle = "Estrutura de Alta Performance: Múltiplos Agentes de IA";
+      else if (isComplexSetup || isMediumScale) suggestedProjectTitle = "Estrutura Completa de Atendimento: IA de Qualificação + CRM";
+      else if (isHourly) suggestedProjectTitle = "Banco de Horas para Otimização de IA";
 
       setAnalyzedResult({
         preset: recommendedPreset,
@@ -252,13 +231,13 @@ export function DemandAnalyzer({ onApplyPlan, clientInfo }) {
           <div className="demand-input-group">
             <textarea
               className="demand-textarea"
-              rows={3}
+              rows={4}
               value={demandText}
               onChange={(e) => {
                 setDemandText(e.target.value);
                 setAnalyzedResult(null);
               }}
-              placeholder="Ex: Cliente quer automação no WhatsApp com 2 agentes de IA, integração com CRM, catálogo de produtos e espera atender 5.000 clientes/mês..."
+              placeholder="Cole aqui o áudio transcrito, e-mail ou mensagem em texto livre com o pedido do cliente..."
             />
             <button
               type="button"

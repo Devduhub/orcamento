@@ -6,11 +6,12 @@ export const CommercialTermsEditor = ({ terms, onUpdateTerms }) => {
 
   const handleModelChange = (modelType) => {
     if (modelType === 'partner') {
+      const pct = terms.partnerPercent || 10;
       onUpdateTerms({
         ...terms,
         modelType: 'partner',
-        partnerPercent: 10,
-        notes: "Modelo Matriz Partner: Participação de 10% sobre as vendas a partir do início da operação. Tudo por nossa conta, exceto tokens e ferramentas externas. Sem fidelidade (cancela quando quiser). Importante: Em caso de contrato recorrente de vendas do cliente, os recebíveis de 10% permanecem válidos até o término dos respectivos contratos ou recebendo o proporcional deles."
+        partnerPercent: pct,
+        notes: `Modelo Matriz Partner: Participação de ${pct}% sobre as vendas a partir do início da operação. Tudo por nossa conta, exceto tokens e ferramentas externas. Sem fidelidade (cancela quando quiser). Importante: Em caso de contrato recorrente de vendas do cliente, os recebíveis de ${pct}% permanecem válidos até o término dos respectivos contratos ou recebendo o proporcional deles.`
       });
     } else {
       onUpdateTerms({
@@ -19,6 +20,15 @@ export const CommercialTermsEditor = ({ terms, onUpdateTerms }) => {
         notes: "O ciclo inicial de gestão é de 6 mensalidades. O contrato renova-se automaticamente por novos ciclos de 6 meses. Para não renovar, o cliente deve comunicar com 30 dias de antecedência."
       });
     }
+  };
+
+  const handlePartnerPercentChange = (val) => {
+    const pct = parseFloat(val) || 10;
+    onUpdateTerms({
+      ...terms,
+      partnerPercent: pct,
+      notes: `Modelo Matriz Partner: Participação de ${pct}% sobre as vendas a partir do início da operação. Tudo por nossa conta, exceto tokens e ferramentas externas. Sem fidelidade (cancela quando quiser). Importante: Em caso de contrato recorrente de vendas do cliente, os recebíveis de ${pct}% permanecem válidos até o término dos respectivos contratos ou recebendo o proporcional deles.`
+    });
   };
 
   return (
@@ -53,9 +63,9 @@ export const CommercialTermsEditor = ({ terms, onUpdateTerms }) => {
         >
           <div className="model-card-header">
             <Handshake size={18} className="text-cyan" />
-            <strong>Matriz Partner (10% sobre Vendas)</strong>
+            <strong>Matriz Partner (% sobre Vendas)</strong>
           </div>
-          <p>Ganhamos juntos, crescemos juntos. Setup + 10% de comissão sobre vendas. Cancela quando quiser.</p>
+          <p>Ganhamos juntos, crescemos juntos. Setup + participação percentual sobre vendas. Sem fidelidade.</p>
         </div>
       </div>
 
@@ -73,11 +83,12 @@ export const CommercialTermsEditor = ({ terms, onUpdateTerms }) => {
                 <input
                   type="number"
                   min="1"
-                  max="50"
+                  max="100"
+                  step="0.5"
                   value={terms.partnerPercent || 10}
-                  onChange={(e) => onUpdateTerms({ ...terms, partnerPercent: parseFloat(e.target.value) || 10 })}
+                  onChange={(e) => handlePartnerPercentChange(e.target.value)}
                 />
-                <span className="input-hint">Porcentagem sobre as vendas a partir da operação.</span>
+                <span className="input-hint">Participação sobre as vendas geradas. Ex: 10%, 15%, 20%.</span>
               </div>
 
               <div className="form-group">

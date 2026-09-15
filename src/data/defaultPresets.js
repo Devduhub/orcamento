@@ -9,6 +9,20 @@ export const INITIAL_COMPANY_INFO = {
   logoUrl: "/logo-ux4you.png",
 };
 
+export const CLIENT_NICHES = [
+  "Geral / Sem Nicho Específico",
+  "Lavanderia & Higienização (ex: Abralav)",
+  "Comunicação Visual & Displays (ex: Mais Display)",
+  "Indústria & Manufatura (ex: Master)",
+  "Confeitaria & Gastronomia",
+  "Varejo & Vestuário",
+  "Saúde, Clínicas & Odontologia",
+  "Imobiliária & Corretores",
+  "Advocacia & Jurídico",
+  "Educação & Infoprodutos",
+  "Prestação de Serviços Gerais"
+];
+
 export const DEFAULT_AI_MODELS = [
   { id: "gpt-4o-mini", name: "OpenAI GPT-4o Mini (Recomendado para FAQ e Triagem Leona)", inputPriceUSDPerM: 0.15, outputPriceUSDPerM: 0.60, avgTokensPerMsg: 800 },
   { id: "gpt-4o", name: "OpenAI GPT-4o (Alto Raciocínio & Vendas Complexas)", inputPriceUSDPerM: 2.50, outputPriceUSDPerM: 10.00, avgTokensPerMsg: 1200 },
@@ -37,34 +51,33 @@ export const CORPORATE_EMAIL_PLANS = [
 export const PRESET_PACKAGES = [
   {
     id: "matriz-partner",
-    name: "Matriz Partner (Setup + 10% sobre Vendas - Sem Fidelidade)",
+    name: "Matriz Partner (Setup + 10% sobre Vendas)",
     category: "Parceria & Revenue Share",
-    description: "Ganhamos juntos, crescemos juntos. Setup inicial (R$ 3k ~ 7k) + 10% de participação sobre as vendas a partir do início da operação. Tudo por nossa conta, exceto tokens e ferramentas externas.",
+    description: "Ganhamos juntos, crescemos juntos. Setup inicial subsidiado (R$ 1.500 ~ R$ 3.500) + 10% de participação sobre as vendas realizadas pelo sistema. Sem mensalidades de suporte atreladas.",
     isPartnerModel: true,
     partnerRevSharePercent: 10,
     items: [
-      { id: "item-1", title: "Setup Inicial & Estrutura Comercial Completa", description: "Configuração do Leona, automações de vendas, criação de fluxos, CRM e treinamento da IA. (Valor ajustável entre R$ 3.000 e R$ 7.000 conforme complexidade).", price: 5000, qty: 1, type: "setup" },
+      { id: "item-1", title: "Setup Inicial & Estrutura Comercial Base", description: "Configuração de IA integrada ao WhatsApp, fluxos de qualificação, painel de acompanhamento básico e implantação operacional.", price: 2500, qty: 1, type: "setup" },
     ],
     tokenEstimate: {
-      conversationsPerMonth: 5000,
+      conversationsPerMonth: 3000,
       msgsPerConversation: 8,
       selectedModelId: "gpt-4o-mini",
       usdToBrlRate: 5.60
     },
     infraItems: [
-      { id: "infra-1", title: "Consumo de Tokens & APIs de IA", price: 0, isMonthly: true, isVariable: true, note: "Por conta do cliente" },
-      { id: "infra-2", title: "Ferramentas Externas & Meta WhatsApp API", price: 0, isMonthly: true, isVariable: true, note: "Faturado direto pelo provedor" }
+      { id: "infra-1", title: "Custos de Servidor e IA", price: 0, isMonthly: true, isVariable: true, note: "Por conta do cliente" }
     ],
     maintenanceMonthlyPrice: 0,
-    maintenanceDescription: "Participação de 10% sobre as vendas a partir do início da operação. Tudo por nossa conta. Cancela quando quiser."
+    maintenanceDescription: "Participação de 10% sobre as vendas a partir do início da operação. Sem fidelidade contratual em gestão mensal."
   },
   {
     id: "matriz-digital-1",
-    name: "Matriz Digital 1 (1 Agente IA + Automação Leona + 3h Suporte)",
+    name: "Pacote Inicial: IA & Triagem Integrada",
     category: "Gestão Mensal",
-    description: "Estrutura inicial com 1 Agente de I.A, Automação Leona e 3 horas de suporte mensal para acompanhamento e evolução.",
+    description: "Estrutura essencial para automatizar 100% da recepção, triagem de interessados e roteamento no WhatsApp.",
     items: [
-      { id: "item-1", title: "Setup Inicial & Implantação da Operação", description: "Configuração do Leona, construção dos fluxos, CRM, IA, testes, treinamento inicial e operação funcional em até 15 dias úteis.", price: 3500, qty: 1, type: "setup" },
+      { id: "item-1", title: "Implantação da Operação com IA", description: "Configuração do orquestrador, construção dos fluxos principais, agente de triagem e inteligência base da empresa.", price: 3000, qty: 1, type: "setup" },
     ],
     tokenEstimate: {
       conversationsPerMonth: 2000,
@@ -73,20 +86,18 @@ export const PRESET_PACKAGES = [
       usdToBrlRate: 5.60
     },
     infraItems: [
-      { id: "infra-1", title: "Servidor & Banco de Vetores (Supabase/Vercel)", price: 150, isMonthly: true },
-      { id: "infra-2", title: "Licença Orquestrador Leona / API WhatsApp", price: 180, isMonthly: true },
-      { id: "infra-3", title: "Taxa da Meta (WhatsApp Cloud API)", price: 0, isMonthly: true, isVariable: true, note: "~1.000 conversas grátis/mês; excedente faturado direto na Meta" }
+      { id: "infra-1", title: "Licença Plataforma / Servidor Base", price: 150, isMonthly: true },
     ],
-    maintenanceMonthlyPrice: 750,
-    maintenanceDescription: "Matriz Digital 1: 1 Agente de I.A + Automação Leona + 3h de Suporte Mensal da UX4YOU."
+    maintenanceMonthlyPrice: 600,
+    maintenanceDescription: "Suporte ativo, calibragem dos agentes de IA e garantia de estabilidade contínua."
   },
   {
     id: "matriz-digital-2",
-    name: "Matriz Digital 2 (2 Agentes IA + Dashboard + 6h Suporte)",
+    name: "Pacote Avançado: IA, CRM & Dashboard",
     category: "Gestão Mensal",
-    description: "Operação avançada com 2 Agentes de I.A, Automação Leona, Banco de Dados, Dashboard Dedicado e 6h de suporte mensal.",
+    description: "Operação completa com múltiplos agentes inteligentes, painel de indicadores (Dashboard) e integração avançada com base de dados própria (Ex: Catálogo, FAQ Extenso).",
     items: [
-      { id: "item-1", title: "Setup Inicial & Implantação da Operação", description: "Configuração do Leona, múltiplos fluxos, integração de banco de dados, dashboard de indicadores e treinamento inicial em até 15 dias úteis.", price: 4800, qty: 1, type: "setup" },
+      { id: "item-1", title: "Setup Completo: Inteligência Multi-Agente & Dados", description: "Configuração completa de banco de dados, múltiplos fluxos conversacionais inteligentes e dashboard em tempo real.", price: 5500, qty: 1, type: "setup" },
     ],
     tokenEstimate: {
       conversationsPerMonth: 5000,
@@ -95,41 +106,18 @@ export const PRESET_PACKAGES = [
       usdToBrlRate: 5.60
     },
     infraItems: [
-      { id: "infra-1", title: "Servidor Cloud Dedicado & Vector DB (Pinecone/Qdrant)", price: 280, isMonthly: true },
-      { id: "infra-2", title: "Plataforma de Multi-Atendimento Leona & Dashboard", price: 290, isMonthly: true },
-      { id: "infra-3", title: "Meta WhatsApp API (Conversas de Serviço)", price: 0, isMonthly: true, isVariable: true, note: "Faturado direto no cartão cadastrado na Meta" }
+      { id: "infra-1", title: "Infraestrutura Cloud & Banco Vetorial", price: 290, isMonthly: true }
     ],
-    maintenanceMonthlyPrice: 1500,
-    maintenanceDescription: "Matriz Digital 2: 2 Agentes de I.A + Automação Leona + Banco de Dados & Dashboard Dedicado + 6h de Suporte Mensal da UX4YOU."
-  },
-  {
-    id: "matriz-digital-3",
-    name: "Matriz Digital 3 (4 Agentes IA + Dashboard + Site/Quiz + 10h Suporte)",
-    category: "Gestão Mensal",
-    description: "Escala completa com 4 Agentes de I.A, Automação Leona, Banco de Dados, Dashboard Dedicado, Site/Quiz Inteligente de Captura e 10h de suporte mensal.",
-    items: [
-      { id: "item-1", title: "Setup Inicial & Arquitetura Multi-Agente Completa", description: "Configuração do Leona com 4 Agentes, integração de banco de dados, dashboard dedicado e criação do Site/Quiz Inteligente de conversão em até 15 dias úteis.", price: 6500, qty: 1, type: "setup" },
-    ],
-    tokenEstimate: {
-      conversationsPerMonth: 10000,
-      msgsPerConversation: 8,
-      selectedModelId: "gpt-4o-mini",
-      usdToBrlRate: 5.60
-    },
-    infraItems: [
-      { id: "infra-1", title: "Servidor Cloud de Alta Performance & Cluster DB", price: 420, isMonthly: true },
-      { id: "infra-2", title: "Plataforma Leona + Orquestrador Multi-Agentes", price: 380, isMonthly: true },
-    ],
-    maintenanceMonthlyPrice: 2500,
-    maintenanceDescription: "Matriz Digital 3: 4 Agentes de I.A + Automação Leona + Banco de Dados & Dashboard Dedicado + Site/Quiz Inteligente + 10h de Suporte Mensal da UX4YOU."
+    maintenanceMonthlyPrice: 1200,
+    maintenanceDescription: "Manutenção proativa, relatórios gerenciais e evolução constante do motor de inteligência e base de conhecimento."
   },
   {
     id: "pacote-horas-avulso",
-    name: "Pacote de Horas de Evolução & Suporte Avulso",
+    name: "Banco de Horas Sob Demanda",
     category: "Suporte & Evolução",
-    description: "Banco de horas para pequenos ajustes, testes, novos fluxos e melhorias contínuas na operação de automação.",
+    description: "Para clientes que desejam melhorias e manutenções sob medida, sem compromisso de longo prazo.",
     items: [
-      { id: "item-1", title: "Pacote de 6 Horas de Desenvolvimento / Suporte", description: "Banco de horas acumulável para ajustes finos, treinamento de IA e integrações.", price: 950, qty: 1, type: "setup" },
+      { id: "item-1", title: "Pacote de 5 Horas de Evolução Especializada", description: "Acumulável para ajustes rápidos de fluxos, adição de novas integrações ou correções de treinamento de IA.", price: 800, qty: 1, type: "setup" },
     ],
     tokenEstimate: {
       conversationsPerMonth: 0,
@@ -139,7 +127,7 @@ export const PRESET_PACKAGES = [
     },
     infraItems: [],
     maintenanceMonthlyPrice: 0,
-    maintenanceDescription: "Suporte contratado por pacote de horas pontual."
+    maintenanceDescription: "Apenas sob demanda. O saldo não expira num período de 6 meses."
   }
 ];
 

@@ -106,14 +106,14 @@ export const ProposalPreview = ({
                   <strong>Objetivo do Projeto</strong>
                 </div>
                 <p>
-                  Implementar uma operação comercial ágil no WhatsApp oficial da Meta: recepção automática por origem (Instagram, TikTok, YouTube), qualificação inteligente de perfil (revenda vs. uso pessoal) e organização completa dos leads para a equipe de vendas.
+                  {clientInfo.projectObjective || "Implementar uma operação comercial ágil no WhatsApp oficial, garantindo atendimento e qualificação eficientes."}
                 </p>
               </div>
             </div>
 
             <div className="pdf-client-footer-box">
               <span className="client-box-label">PREPARADO EXCLUSIVAMENTE PARA:</span>
-              <strong className="client-box-name">{clientInfo.companyName || "Robson Moreira"}</strong>
+              <strong className="client-box-name">{clientInfo.companyName || "Empresa Cliente"}</strong>
               {clientInfo.contactName && <span className="client-box-sub">{clientInfo.contactName}</span>}
               {clientInfo.email && <span className="client-box-sub">{clientInfo.email}</span>}
               <span className="client-box-date">
@@ -178,35 +178,23 @@ export const ProposalPreview = ({
               <h3 className="sub-headline-sm">Fluxo de atendimento automático da entrada até a venda</h3>
               
               <div className="pdf-jornada-flow-container margin-top-xs">
-                <div className="jornada-flow-step">
-                  <div className="jornada-step-badge">1</div>
-                  <strong>Entrada & Origem</strong>
-                  <p>Lead clica no link das redes (TikTok, Instagram ou YouTube) e inicia contato.</p>
-                </div>
-
-                <div className="jornada-flow-step">
-                  <div className="jornada-step-badge">2</div>
-                  <strong>Boas-Vindas</strong>
-                  <p>Atendimento imediato em segundos com áudio/texto e apresentação profissional.</p>
-                </div>
-
-                <div className="jornada-flow-step">
-                  <div className="jornada-step-badge">3</div>
-                  <strong>Triagem IA</strong>
-                  <p>IA diferencia se é revenda (atacado) ou uso pessoal e apresenta tabela.</p>
-                </div>
-
-                <div className="jornada-flow-step">
-                  <div className="jornada-step-badge">4</div>
-                  <strong>Lead Quente</strong>
-                  <p>Coleta dados (CEP, produtos) e avisa a equipe no CRM Kanban para fechamento.</p>
-                </div>
-
-                <div className="jornada-flow-step">
-                  <div className="jornada-step-badge">5</div>
-                  <strong>Follow-up</strong>
-                  <p>Mensagens automáticas em 2h, 2 dias e 1 semana para recuperar quem não finalizou.</p>
-                </div>
+                {clientInfo.customerJourney ? (
+                  clientInfo.customerJourney.split('\n\n').map((step, idx) => {
+                    const lines = step.split('\n');
+                    const titleRaw = lines[0] || '';
+                    const title = titleRaw.replace(/^\d+\.\s*/, '');
+                    const desc = lines.slice(1).join(' ');
+                    return (
+                      <div key={idx} className="jornada-flow-step">
+                        <div className="jornada-step-badge">{idx + 1}</div>
+                        <strong>{title}</strong>
+                        <p>{desc}</p>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p>Jornada não definida.</p>
+                )}
               </div>
             </div>
           </div>

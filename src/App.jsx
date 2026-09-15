@@ -22,15 +22,19 @@ export function App() {
   const [activeTab, setActiveTab] = useState('editor'); // 'editor' | 'preview'
   const [selectedPresetId, setSelectedPresetId] = useState('');
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [showLivePreview, setShowLivePreview] = useState(true);
 
   // Core App States
   const [companyInfo, setCompanyInfo] = useState(INITIAL_COMPANY_INFO);
   const [clientInfo, setClientInfo] = useState({
-    companyName: 'Robson Moreira',
-    contactName: 'Compras, Varejo | Roupas e Vestuário',
-    email: 'robson@varejoexemplo.com.br',
-    phone: '(11) 98765-4321',
-    projectTitle: 'Gestão de Automação + Inteligência de Operação',
+    companyName: '',
+    contactName: '',
+    niche: 'Geral / Sem Nicho Específico',
+    email: '',
+    phone: '',
+    projectTitle: '',
+    projectObjective: 'Implementar uma operação de atendimento ágil e inteligente no WhatsApp oficial da Meta, focando na recepção automática, triagem de interessados e organização estruturada das oportunidades comerciais para a equipe de vendas.',
+    customerJourney: `1. Entrada & Origem\nLead clica no link das redes sociais ou anúncios e inicia o contato.\n\n2. Boas-Vindas & Triagem Inicial\nAtendimento imediato em segundos com apresentação da empresa e inteligência artificial para entender a demanda.\n\n3. Qualificação & Captura de Dados\nIA identifica o perfil do cliente, esclarece dúvidas principais e solicita os dados necessários.\n\n4. Oportunidade Quente\nO contato qualificado é repassado automaticamente para o CRM da equipe de fechamento.\n\n5. Follow-up\nMensagens automáticas de recuperação enviadas para reativar clientes que pararam no meio do atendimento.`,
     proposalId: `UX-${new Date().getFullYear()}-${Math.floor(100 + Math.random() * 900)}`,
     date: new Date().toISOString().split('T')[0]
   });
@@ -157,9 +161,19 @@ export function App() {
       {/* Main App Container */}
       <main className="main-content">
         {activeTab === 'editor' ? (
-          <div className="editor-container grid-two-columns">
+          <div className={`editor-container ${showLivePreview ? 'grid-two-columns' : 'single-column'}`}>
             {/* Left Column: Form Controls */}
             <div className="editor-form-column">
+              <div className="editor-toolbar" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
+                <button 
+                   className="btn-secondary-sm"
+                   onClick={() => setShowLivePreview(!showLivePreview)}
+                   style={{ fontSize: '13px', padding: '6px 12px' }}
+                >
+                   {showLivePreview ? 'Ocultar PDF Lateral (Modo Foco)' : 'Mostrar PDF Lateral'}
+                </button>
+              </div>
+
               <DemandAnalyzer
                 onApplyPlan={handleApplyRecommendedPlan}
                 clientInfo={clientInfo}
@@ -184,34 +198,43 @@ export function App() {
                 onUpdateDiscount={setDiscount}
               />
 
-              <TokenCalculator
-                tokenConfig={tokenConfig}
-                onUpdateTokenConfig={setTokenConfig}
-              />
-
-              <EmailHostingEditor
-                emailConfig={emailConfig}
-                onUpdateEmailConfig={setEmailConfig}
-              />
-
-              <InfrastructureEditor
-                infraItems={infraItems}
-                onUpdateInfraItems={setInfraItems}
-                maintenanceMonthlyPrice={maintenanceMonthlyPrice}
-                onUpdateMaintenancePrice={setMaintenanceMonthlyPrice}
-                maintenanceDescription={maintenanceDescription}
-                onUpdateMaintenanceDesc={setMaintenanceDescription}
-              />
-
-              <GlossaryEditor
-                glossary={glossary}
-                onUpdateGlossary={setGlossary}
-              />
-
               <CommercialTermsEditor
                 terms={commercialTerms}
                 onUpdateTerms={setCommercialTerms}
               />
+
+              {/* Advanced Sections (Collapsible) */}
+              <details className="advanced-section-accordion">
+                <summary className="advanced-section-summary">
+                  <span>⚙️ Configurações Avançadas</span>
+                  <span className="accordion-hint">Tokens de IA, E-mail, Infraestrutura e Glossário</span>
+                </summary>
+                <div className="advanced-section-body">
+                  <TokenCalculator
+                    tokenConfig={tokenConfig}
+                    onUpdateTokenConfig={setTokenConfig}
+                  />
+
+                  <EmailHostingEditor
+                    emailConfig={emailConfig}
+                    onUpdateEmailConfig={setEmailConfig}
+                  />
+
+                  <InfrastructureEditor
+                    infraItems={infraItems}
+                    onUpdateInfraItems={setInfraItems}
+                    maintenanceMonthlyPrice={maintenanceMonthlyPrice}
+                    onUpdateMaintenancePrice={setMaintenanceMonthlyPrice}
+                    maintenanceDescription={maintenanceDescription}
+                    onUpdateMaintenanceDesc={setMaintenanceDescription}
+                  />
+
+                  <GlossaryEditor
+                    glossary={glossary}
+                    onUpdateGlossary={setGlossary}
+                  />
+                </div>
+              </details>
 
               {/* Bottom Action Card to Transform & View PDF */}
               <div className="editor-completion-action-bar">
@@ -246,8 +269,9 @@ export function App() {
             </div>
 
             {/* Right Column: Live Sticky Document Preview */}
-            <div className="editor-preview-sticky-column">
-              <div className="sticky-preview-header">
+            {showLivePreview && (
+              <div className="editor-preview-sticky-column">
+                <div className="sticky-preview-header">
                 <div className="sticky-title-group">
                   <h3>Pré-visualização em Tempo Real</h3>
                   <span className="live-badge">• AO VIVO</span>
@@ -286,7 +310,8 @@ export function App() {
                   commercialTerms={commercialTerms}
                 />
               </div>
-            </div>
+              </div>
+            )}
           </div>
         ) : (
           /* Full Page Preview Tab */

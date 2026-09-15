@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { User, Building2, Calendar, FileCode, Mail, Phone, Globe, Image, Upload, Sparkles, Check, RefreshCw, Clock } from 'lucide-react';
+import { User, Building2, Calendar, FileCode, Mail, Phone, Globe, Image, Upload, Sparkles, Check, RefreshCw, Clock, Target, ListOrdered, Save } from 'lucide-react';
+import { CLIENT_NICHES } from '../data/defaultPresets';
 
 export const ClientInfoForm = ({
   clientInfo,
@@ -31,70 +32,41 @@ export const ClientInfoForm = ({
     setIsGeneratingTitle(true);
 
     setTimeout(() => {
-      // Analyze current services and client context
-      const servicesText = (services || []).map(s => `${s.title} ${s.description}`).join(' ').toLowerCase();
-      const clientName = clientInfo?.companyName || '';
-      const contactOrNiche = clientInfo?.contactName || '';
+      const niche = clientInfo?.niche || 'Geral / Sem Nicho Específico';
       const isPartner = commercialTerms?.modelType === 'partner';
+      
+      let title = "Estrutura de Atendimento Ágil: IA de Qualificação + Direcionamento de Vendas";
+      let objective = "Implementar uma operação comercial ágil e inteligente no WhatsApp oficial, garantindo atendimento instantâneo, triagem 24/7 e organização automática dos clientes qualificados para a equipe de vendas.";
+      let journey = "1. Entrada & Origem\nLead clica no link e inicia o contato.\n\n2. Boas-Vindas & Triagem\nAtendimento imediato e identificação da demanda.\n\n3. Qualificação\nIA esclarece dúvidas e capta dados.\n\n4. Oportunidade Quente\nRepasse ao time de vendas.\n\n5. Follow-up\nRecuperação automática de contatos parados.";
 
-      // Detect capabilities
-      const hasMeta = servicesText.includes('meta') || servicesText.includes('whatsapp') || servicesText.includes('chatbot');
-      const hasAI = servicesText.includes('ia') || servicesText.includes('inteligência') || servicesText.includes('agente') || (tokenConfig?.conversationsPerMonth > 0);
-      const hasCRM = servicesText.includes('crm') || servicesText.includes('botconversa') || servicesText.includes('funil') || servicesText.includes('kanban');
-      const hasSheets = servicesText.includes('sheets') || servicesText.includes('planilha') || servicesText.includes('dados');
-      const hasFollowup = servicesText.includes('follow') || servicesText.includes('recuperação');
-      const hasEmail = emailConfig?.enabled;
-
-      // Extract niche context
-      let nicheTag = '';
-      const combinedClient = `${clientName} ${contactOrNiche}`.toLowerCase();
-      if (combinedClient.includes('roupa') || combinedClient.includes('vestuário') || combinedClient.includes('varejo') || combinedClient.includes('moda') || combinedClient.includes('revenda')) {
-        nicheTag = 'Varejo & Confecção';
-      } else if (combinedClient.includes('saúde') || combinedClient.includes('clínica') || combinedClient.includes('médic') || combinedClient.includes('odont')) {
-        nicheTag = 'Saúde & Clínicas';
-      } else if (combinedClient.includes('imob') || combinedClient.includes('corretor')) {
-        nicheTag = 'Imobiliário';
-      } else if (combinedClient.includes('advoc') || combinedClient.includes('jurídic')) {
-        nicheTag = 'Jurídico';
+      if (niche.includes("Lavanderia")) {
+        title = "Central de Atendimento IA para Lavanderia: Captação e Triagem Automática";
+        objective = "Automatizar o primeiro atendimento via WhatsApp, permitindo que os clientes solicitem coleta, consultem preços e recebam status de pedidos instantaneamente, enviando apenas os casos necessários para o time comercial.";
+        journey = "1. Solicitação Inicial\nCliente envia mensagem via WhatsApp.\n\n2. Triagem de Serviço\nIA identifica se é lavagem comum, tapetes, estofados, etc.\n\n3. Cotação Básica\nApresentação de tabela e agendamento.\n\n4. Confirmação\nDados enviados para o sistema/logística.\n\n5. Pós-venda\nFollow-up sobre qualidade do serviço.";
+      } else if (niche.includes("Comunicação Visual")) {
+        title = "Máquina de Vendas no WhatsApp para Comunicação Visual";
+        objective = "Agilizar orçamentos de projetos e displays sob medida. A IA coleta medidas, materiais e necessidades do cliente antes de envolver a equipe de projetos.";
+        journey = "1. Primeiro Contato\nCliente chama buscando orçamento.\n\n2. Coleta de Escopo\nIA pergunta o tipo de material, tamanho e formato.\n\n3. Briefing Inicial\nRecebimento de dados da arte.\n\n4. Orçamento Específico\nRepasse para o projetista com tudo mastigado.\n\n5. Follow-up\nRetorno para fechamento.";
+      } else if (niche.includes("Varejo")) {
+        title = "Máquina de Vendas no WhatsApp: Triagem de Revenda vs Varejo com IA";
+        objective = "Implementar operação comercial no WhatsApp focada na qualificação de perfil (uso pessoal vs revenda), coleta de CEP e lista de produtos desejados.";
+        journey = "1. Entrada\nLead clica no link do Instagram.\n\n2. Boas-Vindas\nIA diferencia varejo de atacado.\n\n3. Catálogo\nApresentação de preços por perfil.\n\n4. Captura de Pedido\nColeta de grade, tamanho e envio ao CRM.\n\n5. Recuperação\nFollow-up para carrinhos abandonados.";
+      } else if (niche.includes("Saúde")) {
+        title = "Central de Agendamento Automático: IA e Triagem de Pacientes";
+        objective = "Reduzir filas de espera no WhatsApp da clínica, tirando dúvidas de especialidades, aceitação de convênios e encaminhando para agendamento rápido.";
+        journey = "1. Início\nPaciente entra em contato.\n\n2. Triagem de Convênio\nIA pergunta especialidade e se tem plano de saúde.\n\n3. Informações\nTira dúvidas sobre procedimentos.\n\n4. Agendamento\nRepasse para recepção com dados em mãos.\n\n5. Lembrete\nMensagem automática de confirmação de consulta.";
       }
-
-      // Generate context-aware titles
-      const options = [];
-
-      // Build specific tech stack string
-      const stackParts = [];
-      if (hasAI) stackParts.push('IA de Qualificação');
-      if (hasCRM) stackParts.push('CRM');
-      if (hasSheets) stackParts.push('Google Sheets');
-      if (hasFollowup && stackParts.length < 3) stackParts.push('Follow-up Automático');
-      if (hasEmail && stackParts.length < 3) stackParts.push('E-mail Corporativo');
-
-      const stackString = stackParts.slice(0, 3).join(' + ') || 'IA de Qualificação + CRM + Automação';
 
       if (isPartner) {
-        options.push(`Matriz Partner: Operação Comercial no WhatsApp com IA & Gestão de Vendas`);
-        options.push(`Estrutura de Alta Conversão no WhatsApp: IA Qualificadora + CRM + Parceria de Vendas`);
-      } else {
-        options.push(`Estrutura Completa de Atendimento no WhatsApp: ${stackString}`);
-        options.push(`Automação Comercial no WhatsApp: Agente de IA para Triagem & Fechamento de Vendas`);
+        title = "Matriz Partner: " + title;
       }
 
-      // Niche-specific options
-      if (nicheTag === 'Varejo & Confecção' || combinedClient.includes('revenda')) {
-        options.push(`Máquina de Vendas no WhatsApp: Triagem de Revenda vs Varejo com IA + CRM Integrado`);
-      } else if (nicheTag) {
-        options.push(`Central Inteligente de Atendimento no WhatsApp para ${nicheTag}: IA + CRM Oficial`);
-      } else {
-        options.push(`Sistema de Alta Performance no WhatsApp: Recepção Oficial Meta + Triagem com IA`);
-      }
-
-      options.push(`Operação Comercial com Inteligência Artificial: Chatbot Oficial Meta + CRM & Follow-up`);
-
-      const uniqueOptions = [...new Set(options)].filter(Boolean);
-      const chosen = uniqueOptions[0];
-
-      onChangeClient({ ...clientInfo, projectTitle: chosen });
-      setSuggestedTitles(uniqueOptions);
+      onChangeClient({ 
+        ...clientInfo, 
+        projectTitle: title,
+        projectObjective: objective,
+        customerJourney: journey
+      });
       setIsGeneratingTitle(false);
       setCopiedFeedback(true);
       setTimeout(() => setCopiedFeedback(false), 3500);
@@ -146,12 +118,26 @@ export const ClientInfoForm = ({
           />
         </div>
 
+        {/* Niche Dropdown */}
+        <div className="form-group">
+          <label><Globe size={14} /> Nicho de Mercado</label>
+          <select
+            value={clientInfo.niche || 'Geral / Sem Nicho Específico'}
+            onChange={(e) => onChangeClient({ ...clientInfo, niche: e.target.value })}
+            className="input-select"
+          >
+            {CLIENT_NICHES.map(niche => (
+              <option key={niche} value={niche}>{niche}</option>
+            ))}
+          </select>
+        </div>
+
         {/* Client Phone */}
         <div className="form-group">
           <label><Phone size={14} /> WhatsApp do Cliente</label>
           <input
             type="text"
-            value={clientInfo.phone}
+            value={clientInfo.phone || ''}
             onChange={(e) => onChangeClient({ ...clientInfo, phone: e.target.value })}
             placeholder="(11) 98765-4321"
           />
@@ -166,51 +152,55 @@ export const ClientInfoForm = ({
               onClick={handleGenerateAITitle}
               disabled={isGeneratingTitle}
               className="btn-ai-sparkle-inline"
-              title="Gerar título profissional com IA coerente com os serviços e cliente selecionados"
+              title="Analisar e preencher título, objetivo e jornada com IA baseada no nicho"
             >
               {isGeneratingTitle ? (
                 <>
                   <RefreshCw size={13} className="spin-animation" />
-                  <span>Analisando e Gerando...</span>
+                  <span>Gerando Textos...</span>
                 </>
               ) : copiedFeedback ? (
                 <>
                   <Check size={13} className="text-success" />
-                  <span>Título Atualizado com IA!</span>
+                  <span>Proposta Atualizada!</span>
                 </>
               ) : (
                 <>
                   <Sparkles size={13} />
-                  <span>Gerar Título com IA</span>
+                  <span>Preencher Textos com IA</span>
                 </>
               )}
             </button>
           </div>
           <input
             type="text"
-            value={clientInfo.projectTitle}
+            value={clientInfo.projectTitle || ''}
             onChange={(e) => onChangeClient({ ...clientInfo, projectTitle: e.target.value })}
-            placeholder="Ex: Estrutura Completa de Atendimento no WhatsApp: IA de Qualificação + CRM + Google Sheets"
+            placeholder="Ex: Estrutura Completa de Atendimento no WhatsApp: IA de Qualificação"
             className="input-project-title"
           />
+        </div>
 
-          {suggestedTitles.length > 1 && (
-            <div className="ai-title-suggestions">
-              <span className="suggestions-label">💡 Sugestões geradas pela IA (clique para aplicar):</span>
-              <div className="suggestions-chips">
-                {suggestedTitles.map((title, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    className={`suggestion-chip ${clientInfo.projectTitle === title ? 'active' : ''}`}
-                    onClick={() => onChangeClient({ ...clientInfo, projectTitle: title })}
-                  >
-                    {title}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+        {/* Objective */}
+        <div className="form-group full-width">
+          <label><Target size={14} /> Objetivo do Projeto</label>
+          <textarea
+            rows={3}
+            value={clientInfo.projectObjective || ''}
+            onChange={(e) => onChangeClient({ ...clientInfo, projectObjective: e.target.value })}
+            placeholder="Descreva o foco principal do projeto de automação..."
+          />
+        </div>
+
+        {/* Journey */}
+        <div className="form-group full-width">
+          <label><ListOrdered size={14} /> Como Funciona na Prática (Jornada do Cliente)</label>
+          <textarea
+            rows={6}
+            value={clientInfo.customerJourney || ''}
+            onChange={(e) => onChangeClient({ ...clientInfo, customerJourney: e.target.value })}
+            placeholder="1. Entrada... 2. Boas Vindas... Descreva a jornada em formato de passos."
+          />
         </div>
 
         {/* Proposal Code */}
@@ -316,6 +306,21 @@ export const ClientInfoForm = ({
           </div>
         </div>
       </details>
+
+      <div className="card-footer" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end' }}>
+        <button 
+          className="btn-primary-sm" 
+          onClick={() => {
+            const btn = document.activeElement;
+            if(btn) btn.blur();
+            alert("Documento sincronizado! Verifique a prévia.");
+          }}
+          title="Sincronizar dados e atualizar prévia"
+        >
+          <Save size={16} />
+          <span>Salvar e Atualizar Documento</span>
+        </button>
+      </div>
     </div>
   );
 };
